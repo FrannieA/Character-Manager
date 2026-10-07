@@ -2,7 +2,7 @@
 
 A lightweight, offline canvas-based character map for worldbuilding. Drag nodes, draw relationships, add shapes (regions/notes/arrows), snap to a grid, pan/zoom, search your register, and keep a full beginner-style character sheet per character (including portraits). Everything autosaves to localStorage and can be exported/imported as a single JSON file.
 
-(This was originally made for me to keep track of my characters in the game Cult fo the Lamb so please forgive the referances)
+(This was originally made for me to keep track of my characters in the game Cult fo the Lamb so please forgive the references)
 
 ## Features
 
