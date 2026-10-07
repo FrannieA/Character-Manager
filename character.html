@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+    <html>
+        <head> 
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+            <title>Character Map</title>
+            <link rel="stylesheet" href="style.css">
+        </head>
+        
+
+        <body>
+            <div id = "toolbar">
+                <button id="btn-menu" aria-label="Toggle character list" title="Character list">☰</button>
+
+                <h2>Character Map</h2>
+
+                <div id="toolbar-actions">
+                    <button id = "btn-add"><span class="btn-icon">+</span><span class="btn-label">Add Character</span></button>
+                    <button id = "btn-link"><span class="btn-icon">+</span><span class="btn-label">Add Link</span></button>
+
+                    <div class="toolbar-divider"></div>
+
+                    <button id="btn-pan" class="btn-active"><span class="btn-icon">✥</span><span class="btn-label">Pan</span></button>
+                    <button id="btn-select"><span class="btn-icon">⬚</span><span class="btn-label">Select</span></button>
+
+                    <div class="toolbar-divider"></div>
+
+                    <button id="btn-shapes"><span class="btn-icon">◇</span><span class="btn-label">Shape</span></button>
+                    <button id="btn-snap"><span class="btn-icon">⊞</span><span class="btn-label">Snap</span></button>
+
+                    <div class="toolbar-divider"></div>
+
+                    <button id = "btn-export"><span class="btn-icon">⭳</span><span class="btn-label">Export</span></button>
+                    <button id = "btn-import"><span class="btn-icon">⭱</span><span class="btn-label">Import</span></button>
+                </div>
+
+                <input type="file" id="file-input" accept=".json" style="display:none;">
+
+                <span id="mode-hint"></span>
+            </div>
+
+            <div id="app-body">
+                <div id="sidebar-backdrop"></div>
+                <aside id="sidebar">
+                    <div id="sidebar-search-row">
+                        <input type="text" id="char-search" placeholder="Search characters...">
+                    </div>
+                    <div id="char-list"><p class="sidebar-empty">No characters yet.</p></div>
+                    <div id="sidebar-footer"><span id="char-count">0 in register</span></div>
+                </aside>
+
+                <div id = "canvas-area">
+                <canvas id="canvas"></canvas>
+                <div id="panel-backdrop"></div>
+
+                    <!-- Add Character Panel -->
+                    <div id="add-char-panel" style="display:none;">
+                        <h3>New Character</h3>
+
+                        <label>Name</label>
+                        <input type="text" id="new-char-name" placeholder="e.g. Narinder...">
+
+                        <label>Role</label>
+                        <input type="text" id="new-char-role" placeholder="e.g. Bishop...">
+
+                        <label>Region</label>
+                        <input type="text" id="new-char-region" placeholder="e.g. The Gateway...">
+
+                        <label>Colour</label>
+                        <div class="color-row">
+                            <input type="color" id="new-char-color" value="#6D2932">
+                            <div class="color-presets">
+                                <span class="color-swatch" style="background:#6D2932" data-color="#6D2932" data-target="new-char"></span>
+                                <span class="color-swatch" style="background:#3E5C6B" data-color="#3E5C6B" data-target="new-char"></span>
+                                <span class="color-swatch" style="background:#4A5A48" data-color="#4A5A48" data-target="new-char"></span>
+                                <span class="color-swatch" style="background:#6B4E71" data-color="#6B4E71" data-target="new-char"></span>
+                                <span class="color-swatch" style="background:#8A6642" data-color="#8A6642" data-target="new-char"></span>
+                                <span class="color-swatch" style="background:#55746B" data-color="#55746B" data-target="new-char"></span>
+                                <span class="color-swatch" style="background:#33302E" data-color="#33302E" data-target="new-char"></span>
+                            </div>
+                        </div>
+
+                        <div class="panel-buttons">
+                            <button id="btn-confirm-add">Add Character</button>
+                            <button id="btn-cancel-add">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div id = "edit-panel" style="display: none;">
+                        <h3>Edit Character</h3>
+
+                        <div class="charsheet-button">
+                            <button id="btn-add-sheet"><span class="btn-label">Character Sheet</span></button>
+                        </div>
+
+                        <label>Name</label>
+                        <input type="text" id="edit-name">
+                        
+                        <label>Role</label>
+                        <input type="text" id="edit-role">
+
+                        <label>Region</label>
+                        <input type="text" id="edit-region">
+
+                        <label>Note</label>
+                        <textarea id = "edit-note"></textarea>
+
+                        <label>Colour</label>
+                        <div class ="color-row">
+                            <input type="color" id="edit-color">
+                            <div class = "color-presets">
+                                <span class="color-swatch" style="background:#6D2932" data-color="#6D2932"></span>
+                                <span class="color-swatch" style="background:#3E5C6B" data-color="#3E5C6B"></span>
+                                <span class="color-swatch" style="background:#4A5A48" data-color="#4A5A48"></span>
+                                <span class="color-swatch" style="background:#6B4E71" data-color="#6B4E71"></span>
+                                <span class="color-swatch" style="background:#8A6642" data-color="#8A6642"></span>
+                                <span class="color-swatch" style="background:#55746B" data-color="#55746B"></span>
+                                <span class="color-swatch" style="background:#33302E" data-color="#33302E"></span>
+                            </div>
+
+                        </div>
+
+                        <div class = "panel-buttons">
+                            <button id = "btn-save-edit">Save</button>
+                            <button id = "btn-delete">Delete</button>
+                            <button id = "btn-cancel">Cancel</button>
+                        </div>
+                
+                    </div>
+
+                    <div id = "link-panel" style="display:none;">
+                        <h3 id="link-panel-title">New Relationship</h3>
+
+                        <label>Type</label>
+                        <select id="link-type">
+                            <option value="friend">Friend</option>
+                            <option value="ally">Ally</option>
+                            <option value="enemy">Enemy</option>
+                            <option value="family">Family</option>
+                            <option value="lovers">Lovers</option>
+                            <option value="married">Married</option>
+                            <option value="siblings">Siblings</option>
+                            <option value="child">Child</option>
+                            <option value="rival">Rival</option>
+                            <option value="acquaintance">Acquaintance</option>
+                        </select>
+
+                        <div class = "panel-buttons">
+                            <button id = "btn-save-link">Save Link</button>
+                            <button id = "btn-delete-link">Delete Link</button>
+                            <button id = "btn-cancel-link">Cancel</button>
+                        </div>
+
+                    </div>
+
+                <div id="shape-panel" style="display:none;">
+                    <h3 id="shape-panel-title">Add Shape</h3>
+
+                    
+                    <div id="shape-type-picker">
+                        <p class="shape-picker-hint">Choose a shape to draw</p>
+                        <div class="shape-type-grid">
+                            <button class="shape-type-btn" data-type="rect">
+                                <span class="shape-type-icon">▭</span>
+                                <span>Rectangle</span>
+                            </button>
+                            <button class="shape-type-btn" data-type="ellipse">
+                                <span class="shape-type-icon">◯</span>
+                                <span>Ellipse</span>
+                            </button>
+                            <button class="shape-type-btn" data-type="triangle">
+                                <span class="shape-type-icon">△</span>
+                                <span>Triangle</span>
+                            </button>
+                            <button class="shape-type-btn" data-type="line">
+                                <span class="shape-type-icon">╱</span>
+                                <span>Line</span>
+                            </button>
+                            <button class="shape-type-btn" data-type="text">
+                                <span class="shape-type-icon">T</span>
+                                <span>Text Note</span>
+                            </button>
+                        </div>
+                        <p id="shape-draw-hint" class="shape-draw-hint" style="display:none;"></p>
+                        <div class="panel-buttons">
+                            <button id="btn-cancel-shape-picker">Cancel</button>
+                        </div>
+                    </div>
+
+                    
+                    <div id="shape-edit-fields" style="display:none;">
+                        <label>Label</label>
+                        <input type="text" id="shape-label" placeholder="e.g. The North...">
+
+                        <label>Fill Colour</label>
+                        <div class="color-row">
+                            <input type="color" id="shape-color" value="#6D2932">
+                            <div class="color-presets">
+                                <span class="color-swatch" style="background:#6D2932" data-color="#6D2932" data-target="shape"></span>
+                                <span class="color-swatch" style="background:#3E5C6B" data-color="#3E5C6B" data-target="shape"></span>
+                                <span class="color-swatch" style="background:#4A5A48" data-color="#4A5A48" data-target="shape"></span>
+                                <span class="color-swatch" style="background:#6B4E71" data-color="#6B4E71" data-target="shape"></span>
+                                <span class="color-swatch" style="background:#8A6642" data-color="#8A6642" data-target="shape"></span>
+                                <span class="color-swatch" style="background:#55746B" data-color="#55746B" data-target="shape"></span>
+                                <span class="color-swatch" style="background:#33302E" data-color="#33302E" data-target="shape"></span>
+                            </div>
+                        </div>
+
+                        <label>Style</label>
+                        <select id="shape-style">
+                            <option value="rect">Rectangle</option>
+                            <option value="ellipse">Ellipse</option>
+                            <option value="triangle">Triangle</option>
+                            <option value="line">Line / Arrow</option>
+                            <option value="text">Text Note</option>
+                        </select>
+
+                        <div id="arrow-toggle-row" style="display:none;">
+                            <label class="arrow-toggle-label">
+                                <span>Arrowhead</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="shape-arrow" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </label>
+                        </div>
+
+                        <label>Font Size</label>
+                        <input type="number" id="shape-fontsize" value="18" min="8" max="72">
+
+                        <div class="panel-buttons">
+                            <button id="btn-save-shape">Save</button>
+                            <button id="btn-delete-shape">Delete</button>
+                            <button id="btn-cancel-shape">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+        <!-- Character Sheet Overlay -->
+        <div id="sheet-overlay" style="display:none;">
+            <div id="sheet-panel">
+                <div id="sheet-header">
+                    <h3>Character Sheet</h3>
+                    <button id="btn-close-sheet" title="Close">✕</button>
+                </div>
+
+                <div id="sheet-body">
+
+                    <section class="sheet-section">
+                        <h4>Identity</h4>
+
+                        <label>Portrait</label>
+                        <div class="sheet-avatar-row">
+                            <span class="sheet-avatar-preview" id="sheet-avatar-preview"></span>
+                            <div class="sheet-avatar-actions">
+                                <button type="button" class="sheet-avatar-btn" id="btn-upload-portrait">Upload image</button>
+                                <button type="button" class="sheet-avatar-btn sheet-avatar-btn-danger" id="btn-clear-portrait">Remove</button>
+                            </div>
+                        </div>
+                        <input type="file" id="sheet-portrait-input" accept="image/*" style="display:none;">
+
+                        <label for="sheet-name">Character name</label>
+                        <input type="text" id="sheet-name" placeholder="e.g. Narinder...">
+
+                        <div class="sheet-row">
+                            <div>
+                                <label for="sheet-age">Age</label>
+                                <input type="text" id="sheet-age" placeholder="">
+                            </div>
+                            <div>
+                                <label for="sheet-pronouns">Gender / pronouns</label>
+                                <input type="text" id="sheet-pronouns" placeholder="">
+                            </div>
+                        </div>
+
+                        <label for="sheet-role">Role / occupation</label>
+                        <input type="text" id="sheet-role" placeholder="e.g. Bishop ...">
+
+                        <div class="sheet-row">
+                            <div>
+                                <label for="sheet-region">Region</label>
+                                <input type="text" id="sheet-region" placeholder="e.g. The Gateway...">
+                            </div>
+                            <div>
+                                <label for="sheet-note">Note</label>
+                                <input type="text" id="sheet-note" placeholder="">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="sheet-section">
+                        <h4>Appearance</h4>
+
+                        <label for="sheet-physical">Physical traits</label>
+                        <textarea id="sheet-physical" placeholder="Describe their hair, eyes, build, height, clothing, etc."></textarea>
+
+                        <label for="sheet-features">Distinctive features</label>
+                        <textarea id="sheet-features" placeholder="Any scars, tattoos, accessories, expressions, etc."></textarea>
+                    </section>
+
+                    <section class="sheet-section">
+                        <h4>Personality</h4>
+
+                        <label>Write three words to describe this character</label>
+                        <div class="sheet-row sheet-row-3">
+                            <input type="text" id="sheet-trait1" placeholder="Trait 1">
+                            <input type="text" id="sheet-trait2" placeholder="Trait 2">
+                            <input type="text" id="sheet-trait3" placeholder="Trait 3">
+                        </div>
+
+                        <div class="sheet-row">
+                            <div>
+                                <label for="sheet-strengths">Strengths</label>
+                                <textarea id="sheet-strengths" placeholder="Strength"></textarea>
+                            </div>
+                            <div>
+                                <label for="sheet-weaknesses">Weaknesses</label>
+                                <textarea id="sheet-weaknesses" placeholder="Weakness"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="sheet-row">
+                            <div>
+                                <label>Likes</label>
+                                <div class="sheet-list" id="sheet-likes"></div>
+                                <button type="button" class="sheet-add-btn" id="btn-add-like">+ Add more</button>
+                            </div>
+                            <div>
+                                <label>Dislikes</label>
+                                <div class="sheet-list" id="sheet-dislikes"></div>
+                                <button type="button" class="sheet-add-btn" id="btn-add-dislike">+ Add more</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="sheet-section">
+                        <h4>Motivation &amp; goals</h4>
+
+                        <label for="sheet-motivation">Character motivation</label>
+                        <textarea id="sheet-motivation" placeholder="What do they want most? "></textarea>
+
+                        <label for="sheet-obstacle">What's stopping them?</label>
+                        <textarea id="sheet-obstacle" placeholder="Main obstacle."></textarea>
+
+                        <label for="sheet-fear">Biggest fear or conflict</label>
+                        <textarea id="sheet-fear" placeholder="Biggest struggle or emotional tension."></textarea>
+                    </section>
+
+                    <section class="sheet-section">
+                        <h4>Relationships</h4>
+                        <label>Important people in their life</label>
+                        <div class="sheet-list" id="sheet-relationships"></div>
+                        <button type="button" class="sheet-add-btn" id="btn-add-rel">+ Add relationship</button>
+                    </section>
+
+                    <section class="sheet-section">
+                        <h4>Backstory</h4>
+
+                        <label for="sheet-backstory">Backstory summary</label>
+                        <textarea id="sheet-backstory" placeholder="Their past or what shaped them."></textarea>
+
+                        <label for="sheet-growth">Change or growth</label>
+                        <textarea id="sheet-growth" placeholder="How will they change over time ?"></textarea>
+                    </section>
+
+                </div>
+
+                <div id="sheet-footer">
+                    <button type="button" class="sheet-btn" id="btn-close-sheet-2">Close</button>
+                    <button type="button" class="sheet-btn" id="btn-print-sheet">Print</button>
+                    <button type="button" class="sheet-btn sheet-btn-primary" id="btn-save-sheet">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+        
+        </body>
+    </html>
